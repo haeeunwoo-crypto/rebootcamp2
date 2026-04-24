@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리부트 캠프 2기 내부 컨펌용 기획안</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. THE SETUP (Horizontal Slider) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #050b14; /* Very Dark Background for Presentation Mode */
+            overflow: hidden; /* Prevent body scrolling */
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* Slider Wrapper */
+        .presentation-slider {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-slider::-webkit-scrollbar {
+            display: none; /* Hide scrollbar */
+        }
+
+        .slide-wrapper {
+            flex: 0 0 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Nav Buttons */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            color: #00d2ff;
+            border-color: #00d2ff;
+        }
+
+        .prev-btn { left: 30px; }
+        .next-btn { right: 30px; }
+
+        /* Slide Container (Strict Size Maintained) */
+        .slide-container {
+            align-items: center;
+            background-color: #1e293b; /* Slide Background */
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            width: 1280px; /* Fixed Width */
+            height: 720px; /* Fixed Height */
+            justify-content: flex-start;
+            overflow: hidden;
+            padding: 60px;
+            position: relative;
+            color: #f8fafc;
+            /* Auto-scale to fit any screen size while maintaining 1280x720 aspect ratio */
+            transform: scale(calc(min(100vw / 1280, 100vh / 720) * 0.95)); 
+            transform-origin: center center;
+        }
+
+        /* Gradient Accents */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            z-index: 10;
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 2. CONSISTENT TYPOGRAPHY */
+        .slide-container h1,
+        .slide-container h2,
+        .slide-container h3 {
+            font-weight: 700;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .slide-container h1 {
+            font-size: 64px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            margin-bottom: 40px;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slide-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 42px;
+            background-color: #00d2ff;
+            border-radius: 4px;
+        }
+
+        .slide-container h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #38bdf8; /* Light Blue Accent */
+        }
+
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container th,
+        .slide-container td {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .slide-container .subtitle {
+            font-size: 24px;
+            color: #94a3b8;
+            margin-top: 20px;
+            font-weight: 300;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 3. LAYOUT DEFINITIONS */
+        
+        /* Title Layout */
+        .title-layout {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .title-layout h1 span {
+            color: #00d2ff;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .two-column.tiled {
+            align-items: stretch;
+        }
+
+        .two-column.tiled > div {
+            background-color: #0f172a;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 40px;
+            text-align: left;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .two-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .two-column li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .two-column li::before {
+            content: '\f105'; /* FontAwesome angle-right */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #00d2ff;
+        }
+
+        /* Image Wrappers */
+        .image-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            width: 100%;
+            height: 380px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background-color: #0f172a;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .two-column .image-wrapper img {
+            object-fit: cover;
+            border: 1px solid #334155;
+        }
+
+        /* Tiled Icons Layout */
+        .tiled-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .tile {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 40px 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .tile .icon {
+            font-size: 40px;
+            color: #34d399; /* Emerald Green */
+            margin-bottom: 25px;
+            background: rgba(52, 211, 153, 0.1);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+        }
+
+        .tile h3 {
+            font-size: 24px;
+            color: #f8fafc;
+        }
+
+        /* Tiled Images Layout */
+        .image-tile {
+            flex: 1;
+            text-align: left;
+            background-color: #0f172a;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .image-tile .image-wrapper {
+            height: 200px;
+            border-radius: 0;
+            box-shadow: none;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .image-tile .text-content {
+            padding: 25px;
+        }
+
+        .image-tile h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        /* Rounded Image Text Layout */
+        .rounded-image-layout .image-wrapper {
+            border-radius: 50%;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            border: 4px solid #00d2ff;
+            padding: 5px;
+            background-color: transparent;
+        }
+
+        .rounded-image-layout .image-wrapper img {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .rounded-image-layout.two-column {
+            align-items: center;
+        }
+
+        .rounded-image-layout .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(58, 123, 213, 0.1) 100%);
+            border-left: 4px solid #00d2ff;
+            padding: 25px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+        }
+
+        .rounded-image-layout .highlight-box p {
+            color: #f8fafc;
+            font-weight: 500;
+        }
+
+        /* Table Layout */
+        .table-layout {
+            width: 100%;
+            background-color: #0f172a;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .table-layout table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-layout th, .table-layout td {
+            padding: 20px 25px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        .table-layout th {
+            background-color: #1e293b;
+            color: #00d2ff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .table-layout tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-layout td strong {
+            color: #38bdf8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Timeline Layout */
+        .timeline-layout {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+            padding-top: 40px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 55px;
+            left: 5%;
+            width: 90%;
+            height: 4px;
+            background: #334155;
+            z-index: 0;
+        }
+
+        .timeline-item {
+            width: 23%;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .timeline-dot {
+            width: 34px;
+            height: 34px;
+            background-color: #0f172a;
+            border: 4px solid #00d2ff;
+            border-radius: 50%;
+            margin: 0 auto 25px auto;
+            position: relative;
+            box-shadow: 0 0 0 6px #1e293b;
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            border-color: #34d399;
+        }
+
+        .timeline-item h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            color: #f8fafc;
+            margin-bottom: 5px;
+        }
+
+        .timeline-item .month-label {
+            color: #00d2ff;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .timeline-item:nth-child(even) .month-label {
+            color: #34d399;
+        }
+
+        .timeline-item p {
+            font-size: 15px;
+            text-align: center;
+            background-color: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            line-height: 1.5;
+        }
+
+        /* Bleed Image Right Layout */
+        .slide-container.bleed-image-layout {
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+        }
+
+        .slide-container.bleed-image-layout > .content-container {
+            padding: 60px 50px 60px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .slide-container.bleed-image-layout .image-container {
+            width: 100%;
+            height: 720px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide-container.bleed-image-layout .image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #1e293b 0%, rgba(30, 41, 59, 0) 20%);
+        }
+
+        .slide-container.bleed-image-layout img.bleed-image-side {
+            width: 100%;
+            height: 720px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .bleed-text-side h3 {
+            font-size: 36px;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        
+        .bleed-text-side p {
+            font-size: 20px;
+        }
+
+        .summary-list {
+            margin-top: 30px;
+            list-style: none;
+        }
+
+        .summary-list li {
+            background-color: #0f172a;
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #34d399;
+            font-weight: 500;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .summary-list li i {
+            color: #34d399;
+        }
+
+        /* Warning / Info Box */
+        .info-box {
+            background-color: rgba(52, 211, 153, 0.1);
+            border-left: 4px solid #34d399;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+        .info-box p {
+            color: #f8fafc;
+            font-size: 16px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Buttons -->
+    <button class="nav-btn prev-btn" onclick="moveSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+    <button class="nav-btn next-btn" onclick="moveSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+
+    <!-- Slider Container -->
+    <div class="presentation-slider" id="slider">
+
+        <!-- Slide 1: Title_Slide -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide1">
+                <div class="title-layout">
+                    <h1 style="margin-bottom: 20px;">리부트 캠프 2기<br><span>개편 기획안</span></h1>
+                    <p class="subtitle">단기 AI 실전형 취업지원 프로그램으로의 전환</p>
+                    <div style="margin-top: 60px; display: flex; justify-content: center; gap: 20px;">
+                        <span style="background: #0f172a; padding: 10px 25px; border-radius: 30px; border: 1px solid #334155; color: #00d2ff; font-weight: 500;">내부 컨펌용 보고서</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Two_Column_Tiled_Text (Core Direction) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide2">
+                <h2 class="slide-title">기획 방향: 패러다임 전환</h2>
+                <div class="content-area">
+                    <div class="two-column tiled">
+                        <div>
+                            <h3>AS-IS (기존 방식)</h3>
+                            <p style="margin-bottom: 20px;">기존 3개월 심화형 과정의 한계점</p>
+                            <ul>
+                                <li>긴 교육 기간 (3개월)</li>
+                                <li>난이도 높은 대형 프로젝트 제작</li>
+                                <li>매월 정기 개설에 따른 모객 부담</li>
+                                <li>높은 운영 리소스 및 특정 강사 의존도</li>
+                            </ul>
+                        </div>
+                        <div style="border-color: #00d2ff; position: relative;">
+                            <div style="position: absolute; top: -15px; right: 20px; background: #00d2ff; color: #0f172a; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 14px;">NEW</div>
+                            <h3 style="color: #00d2ff;">TO-BE (2기 방향)</h3>
+                            <p style="margin-bottom: 20px;">짧고 가벼운 실전형 취업 성과 중심</p>
+                            <ul>
+                                <li>짧고 집중도 높은 단기 운영 (2주)</li>
+                                <li>AI를 활용한 실습형 미니 결과물 제작</li>
+                                <li>사전 수요 기반의 비정기 개설</li>
+                                <li>표준형 운영 및 과정 종료 후 취업 멘토링 직결</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Tiled_Text_With_Icons (Why Change?) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide3">
+                <h2 class="slide-title">개편의 필요성</h2>
+                <div class="content-area">
+                    <div class="tiled-content">
+                        <div class="tile">
+                            <div class="icon"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                            <h3>운영 효율성 확보</h3>
+                            <p style="margin-top: 15px;">기존 3개월 과정은 막대한 운영 리소스가 소모되었습니다. 단기 전환을 통해 리소스를 절감하고 더 많은 수료생에게 기회를 제공하는 것이 현실적입니다.</p>
+                        </div>
+                        <div class="tile">
+                            <div class="icon" style="color: #00d2ff; background: rgba(0, 210, 255, 0.1);"><i class="fa-solid fa-microchip"></i></div>
+                            <h3>AI 트렌드 반영</h3>
+                            <p style="margin-top: 15px;">최근 채용 시장은 순수 개발 역량뿐만 아니라 AI 툴 활용 경험을 높게 평가합니다. 비전공자도 접근 가능한 난이도로 AI 역량을 탑재시킵니다.</p>
+                        </div>
+                        <div class="tile">
+                            <div class="icon" style="color: #f43f5e; background: rgba(244, 63, 94, 0.1);"><i class="fa-solid fa-bullseye"></i></div>
+                            <h3>최종 취업률 포커스</h3>
+                            <p style="margin-top: 15px;">핵심은 복잡한 과정 운영이 아닌 수료생의 취업률 개선입니다. 결과물 생성과 즉각적인 취업 멘토링을 연결하여 실질적인 성과를 도출합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Image_Right_Text_Left (Target Audience & Goal) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide4">
+                <h2 class="slide-title">목표 및 타겟 수강생</h2>
+                <div class="content-area">
+                    <div class="two-column">
+                        <div>
+                            <h3 style="font-size: 32px; color: #ffffff; margin-bottom: 25px;">현 취업 시장을 돌파할<br><span style="color: #34d399;">AI/AX 역량 장착 & 리부트</span></h3>
+                            <p style="margin-bottom: 20px;">단순 포트폴리오 보완을 넘어, AI 시대를 맞이하여 <strong>직군/직무에 관계없이</strong> 기술력을 어필하고 새로운 커리어 패스를 제시합니다.</p>
+                            <ul>
+                                <li><strong>강력한 기술 어필:</strong> AI를 활용해 직접 결과물을 만들어봄으로써, 포트폴리오 경쟁력은 물론 면접 시 문제해결 능력 및 신기술 활용도를 적극적으로 어필</li>
+                                <li><strong>직무 전환 (Pivot) 기회:</strong> 취업 수요가 적은 직군의 수료생에게 AI 융합 역량을 더해주어 새로운 커리어 전환의 기회 제공</li>
+                                <li><strong>'창업'이라는 새로운 길:</strong> 나만의 서비스를 AI로 기획 및 구현해보는 경험을 통해, 취업 대신 '창업'이라는 대안적 진로 모델 제시</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="image-wrapper">
+                                <!-- 대체된 고화질 무료 이미지 (Unsplash) -->
+                                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="팀원들이 랩탑으로 협업하는 모습">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Two_Column_Tiled_Text (Operation Strategy & Recruitment) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide5">
+                <h2 class="slide-title">운영 전략 및 6월 모집 프로세스</h2>
+                <div class="content-area">
+                    <div class="two-column tiled">
+                        <div>
+                            <h3 style="display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-building-circle-check"></i> 개설 및 환경 구축</h3>
+                            <p style="margin-bottom: 20px;">수요 기반의 안정적인 오프라인 운영</p>
+                            <ul>
+                                <li><strong>강남 통합 개설:</strong> 구로/천호 지점 수요까지 모두 흡수하여 강남 지점 통합으로 개설 (쾌적한 오프라인 실습 환경 보장)</li>
+                                <li><strong>사전 수요 파악:</strong> 정기 개설의 모객 부담을 줄이고, 수료생의 실질적 니즈에 맞춘 기수별 탄력적 운영 방식 도입</li>
+                                <li><strong>특정 강사 의존도 탈피:</strong> 자료 및 실습 양식의 규격화를 통한 표준화된 교육 시스템 정착</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 style="display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-user-plus"></i> 6월 2기 모집 프로세스</h3>
+                            <p style="margin-bottom: 20px;">6월 중순 개강을 위한 체계적인 모집안</p>
+                            <ul>
+                                <li><strong>[5월 중순] 안내 및 수요 파악:</strong> 기존 수료생 커뮤니티 및 알림톡을 통해 2기 개강 안내 및 사전 수요 파악 진행</li>
+                                <li><strong>[5월 말] 참가 신청 접수:</strong> 구글 폼 등 간편 양식을 활용하여 실질적 참여 의사가 있는 수료생 모집</li>
+                                <li><strong>[6월 초] 선발 및 안내:</strong> 최종 참여 대상자 확정 후 커리큘럼 및 강남 지점 오프라인 참석 안내문 발송</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Tiled_Images (Educational Content) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide6">
+                <h2 class="slide-title">AI 실전형 교육 핵심</h2>
+                <div class="content-area">
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 20px;">어렵고 긴 프로젝트보다, <strong style="color:#00d2ff;">짧은 기간 안에 AI를 활용해 하나의 기능을 직접 구현</strong>하는 경험에 집중합니다.</p>
+                    <div class="tiled-content">
+                        <div class="image-tile">
+                            <div class="image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=400&q=80" alt="인공지능 개념 추상화">
+                            </div>
+                            <div class="text-content">
+                                <h3>1. AI/AX 이해 및 기획</h3>
+                                <p>생성형 AI 및 AX의 기본 개념을 익히고, 이를 실무에 적용할 수 있는 서비스 아이디어를 도출하여 기획합니다.</p>
+                            </div>
+                        </div>
+                        <div class="image-tile">
+                            <div class="image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=400&q=80" alt="UI UX 와이어프레임 설계">
+                            </div>
+                            <div class="text-content">
+                                <h3>2. 미니 프로토타입 구현</h3>
+                                <p>기획한 아이디어를 바탕으로 AI API 등을 연동하여 간단한 수준의 미니 서비스나 핵심 기능을 단기간에 직접 구현합니다.</p>
+                            </div>
+                        </div>
+                        <div class="image-tile">
+                            <div class="image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80" alt="포트폴리오 문서와 노트북">
+                            </div>
+                            <div class="text-content">
+                                <h3>3. 결과물 산출 및 발표</h3>
+                                <p>구현된 결과물을 바탕으로 기획서/발표자료를 제작하고 피드백을 수렴하여 즉시 이력서와 포트폴리오에 반영합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Table (Curriculum & Next Steps) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide7">
+                <h2 class="slide-title">2주 단기 커리큘럼 (예시)</h2>
+                <div class="content-area">
+                    <div class="table-layout">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">구분</th>
+                                    <th style="width: 42.5%;">1주차: AI/AX 활용 및 서비스 기획</th>
+                                    <th style="width: 42.5%;">2주차: 실습 구현 및 후속 연계</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Day 1-2</strong> (개념/기획)</td>
+                                    <td>
+                                        <strong>생성형 AI 생태계 이해</strong>
+                                        대표적인 AI API 소개 및 활용 사례 분석<br>
+                                        프롬프트 엔지니어링 기초 실습
+                                    </td>
+                                    <td>
+                                        <strong>핵심 기능 개발 시작</strong>
+                                        AI API를 연동한 백엔드/프론트엔드 기초 세팅<br>
+                                        미니 서비스 코어 로직 구현
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Day 3-4</strong> (기획/구현)</td>
+                                    <td>
+                                        <strong>서비스 아이디어 기획안 작성</strong>
+                                        AI를 접목한 개인별/팀별 미니 프로젝트 주제 선정<br>
+                                        화면 설계서(와이어프레임) 작성
+                                    </td>
+                                    <td>
+                                        <strong>프로토타입 고도화 및 디버깅</strong>
+                                        UI/UX 연동 및 결과물 테스트<br>
+                                        발생 오류 수정 및 기능 안정화
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom: none;"><strong>Day 5</strong> (결과/연계)</td>
+                                    <td style="border-bottom: none;">
+                                        <strong>기획안 컨펌 및 구현 준비</strong>
+                                        멘토 피드백 반영 및 기획안 최종 확정<br>
+                                        개발 환경 셋업
+                                    </td>
+                                    <td style="border-bottom: none;">
+                                        <strong>최종 발표 및 맞춤형 연계 지원</strong>
+                                        완성 결과물 시연 및 포트폴리오화 가이드<br>
+                                        <span style="color: #34d399; font-weight: bold; margin-top: 5px; display: inline-block;">[트랙 분류] 추가 멘토링 or 창업 지원 연계</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Curriclum Bottom Info Box -->
+                    <div style="width: 100%; display: flex; gap: 20px; margin-top: 15px;">
+                        <div class="info-box" style="flex: 1; border-color: #00d2ff; background-color: rgba(0, 210, 255, 0.1);">
+                            <p><strong><i class="fa-solid fa-briefcase"></i> 취업 집중 트랙: <span style="color:#00d2ff;">'SOS 클리닉'</span> 안내</strong><br>포트폴리오 고도화 및 면접 스킬 등 추가적인 심화 멘토링이 필요한 수강생 대상 코칭 연계</p>
+                        </div>
+                        <div class="info-box" style="flex: 1;">
+                            <p><strong><i class="fa-solid fa-rocket"></i> 비즈니스 트랙: <span style="color:#34d399;">'창업 특강'</span> 안내</strong><br>직접 만든 AI 서비스를 기반으로 창업을 희망하는 수강생 대상 사업자등록증 개설 및 초기 가이드 제공</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Rounded_Image_and_Text (Job Linkage) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide8">
+                <h2 class="slide-title">취업 연계 멘토링</h2>
+                <div class="content-area">
+                    <div class="two-column rounded-image-layout">
+                        <div>
+                            <div class="image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=80" alt="1대1 커리어 멘토링 중인 모습">
+                            </div>
+                        </div>
+                        <div style="padding-left: 20px;">
+                            <h3 style="font-size: 36px; color: #ffffff;">교육의 완성은 <span style="color: #00d2ff;">취업 성과</span></h3>
+                            <p style="margin-bottom: 20px;">리부트 캠프 2기의 최종 목적지는 프로젝트 완성이 아닌 수료생의 성공적인 취업입니다. 2주 과정 직후 취업 멘토링을 의무적으로 연결합니다. (필요 시 별도 1~2회 세션 운영)</p>
+                            
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-file-lines" style="color: #34d399; font-size: 20px;"></i> 
+                                    <span style="font-size: 18px; color: #cbd5e1;">단기 산출물 기반 이력서 및 포트폴리오 업데이트</span>
+                                </li>
+                                <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-comments" style="color: #34d399; font-size: 20px;"></i> 
+                                    <span style="font-size: 18px; color: #cbd5e1;">프로젝트 경험의 면접 답변화 및 모의 훈련</span>
+                                </li>
+                                <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-briefcase" style="color: #34d399; font-size: 20px;"></i> 
+                                    <span style="font-size: 18px; color: #cbd5e1;">지원 희망 직무 세부 정리 및 즉각적인 입사 지원 독려</span>
+                                </li>
+                            </ul>
+
+                            <div class="highlight-box">
+                                <p><i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i> 바로 취업이 어려운 경우, 예외적 대안으로 창업/사업자등록 연계 트랙 안내 가능 (단, 기본 방향은 취업 연계 우선)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Timeline (Prep Timeline for Mid-June Launch) -->
+        <div class="slide-wrapper">
+            <div class="slide-container" id="slide9">
+                <h2 class="slide-title">운영팀 6월 개강 준비 타임라인</h2>
+                <div class="content-area">
+                    <p style="width: 100%; text-align: center; margin-bottom: 20px; font-size: 20px; color: #94a3b8;">성공적인 6월 중순 개강을 위한 운영팀의 세부 준비 및 모집 일정입니다.</p>
+                    <div class="timeline-layout">
+                        <div class="timeline-line"></div>
+                        <!-- Step 1 -->
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="month-label">D-4주 (5월 3주차)</div>
+                            <h3>기획 및 셋업</h3>
+                            <p style="text-align: left; padding: 15px;">
+                                • 기획안 확정 및 예산 배정<br>
+                                • <strong>강사 및 멘토진 섭외 완료</strong><br>
+                                • 표준 강의안/실습안/템플릿 제작
+                            </p>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="month-label">D-3주 (5월 4주차)</div>
+                            <h3>모집 및 홍보</h3>
+                            <p style="text-align: left; padding: 15px;">
+                                • 전체 수료생 대상 안내문 발송<br>
+                                • <strong>사전 수요 파악 및 신청 접수</strong><br>
+                                • (구글 폼 활용 참가 의향 조사)
+                            </p>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="month-label">D-1주 (6월 1주차)</div>
+                            <h3>선발 및 환경 세팅</h3>
+                            <p style="text-align: left; padding: 15px;">
+                                • 신청자 검토 및 <strong>참가 대상자 확정</strong><br>
+                                • 대상자 오프라인 참석 확정 안내<br>
+                                • 강남 지점 강의장 및 인프라 점검
+                            </p>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="month-label">D-Day (6월 3주차)</div>
+                            <h3 style="color: #34d399;">2기 개강</h3>
+                            <p style="text-align: left; padding: 15px; border-color: #34d399;">
+                                • <strong>오프라인 2주 단기 과정 시작</strong><br>
+                                • 종료 후 <strong>SOS 클리닉 / 창업 연계</strong><br>
+                                • 취업 성과 집중 트래킹 시작
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Bleed_Image_Right (Executive Summary & Future Plans) -->
+        <div class="slide-wrapper">
+            <div class="slide-container bleed-image-layout" id="slide10">
+                <div class="content-container">
+                    <h2 class="slide-title">제안 요약 및 향후 방향성</h2>
+                    <div class="bleed-text-side">
+                        <h3>결론: <span style="color: #00d2ff;">AI 기반 커리어 리부트</span> 전환</h3>
+                        <p style="color: #cbd5e1;">리부트 캠프 2기는 수료생들에게 현 시장이 요구하는 AI 활용 경험을 제공하고, 취업 및 창업이라는 실질적 성과를 창출하는 단기 집중 프로그램입니다.</p>
+                        
+                        <ul class="summary-list">
+                            <li><i class="fa-solid fa-clock"></i> <strong>운영형태:</strong> 오프라인 강남 통합 2주 단기 과정 (6월 중순)</li>
+                            <li><i class="fa-solid fa-laptop-code"></i> <strong>교육내용:</strong> AI 실전형 결과물 제작을 통한 커리어 피벗</li>
+                            <li><i class="fa-solid fa-handshake-angle"></i> <strong>후속연계:</strong> 종료 즉시 SOS 취업 클리닉 및 창업 특강 연결</li>
+                        </ul>
+                        
+                        <div class="info-box" style="margin-top: 25px;">
+                            <p><strong><i class="fa-solid fa-chart-line"></i> Next Step: 3기 운영 방향성 결정</strong><br>
+                            본 2기 종료 후 <strong style="color: #00d2ff;">취업률/만족도 등의 성과 데이터를 철저히 분석</strong>합니다. 이를 바탕으로 2기의 모델을 그대로 유지하여 3기를 진행할지, 피드백을 반영해 <strong style="color: #34d399;">한 번 더 리튜얼(Retual) 과정을 거쳐 고도화</strong>할지 여부를 결정할 예정입니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-container">
+                    <img class="bleed-image-side" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="현대적인 기술 오피스 공간">
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End of Slider Container -->
+
+    <!-- Navigation Script -->
+    <script>
+        const slider = document.getElementById('slider');
+        
+        function moveSlide(direction) {
+            // Get the width of one full slide wrapper (100vw)
+            const slideWidth = window.innerWidth;
+            slider.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+        }
+        
+        // Keyboard navigation (Left/Right Arrows)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') moveSlide(1);
+            if (e.key === 'ArrowLeft') moveSlide(-1);
+        });
+    </script>
+</body>
+</html>
+```
